@@ -65,6 +65,7 @@ function pieceMouseDown(e: React.MouseEvent<HTMLDivElement>) {
 		document.onmouseup = null;
 
 		document.querySelectorAll(".active2").forEach((tile) => tile.classList.remove("active2"));
+		document.querySelectorAll(".active").forEach((tile) => tile.classList.remove("active"));
 
 		piece.style.position = "unset";
 		piece.style.pointerEvents = "auto";
