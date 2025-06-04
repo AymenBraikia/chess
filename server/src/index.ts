@@ -44,9 +44,8 @@ const port = 8000,
 app.get("/", (req, res) => {
 	res.send("Hello TypeScript with Express!");
 });
-app.listen(port, () => {
-	console.log(`Server running on http://localhost:${port}`);
-});
+
+app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 
 app.get("/api/play", (req, res) => {
 	const { time, increament } = req.query;
@@ -59,7 +58,13 @@ app.get("/api/play", (req, res) => {
 const wss = new WebSocket.Server({ port: wsPort, path: "/ws/play" });
 
 wss.on("connection", (ws: WebSocket) => {
-	ws.onmessage = (msg: MessageEvent) => {};
+	ws.onmessage = (msg: MessageEvent) => {
+		const data = msg.data.toString();
+
+		if (data.length == 16 && !isNaN(Number(data))) {
+            
+		}
+	};
 });
 
 function getRandomID(length: number): string {
