@@ -1,3 +1,5 @@
+import stockfish from "./lab";
+
 import express from "express";
 // import connectDB from "./db";
 import cors from "cors";
@@ -58,12 +60,41 @@ app.get("/api/play", (req, res) => {
 const wss = new WebSocket.Server({ port: wsPort, path: "/ws/play" });
 
 wss.on("connection", (ws: WebSocket) => {
+	const moves: string[] = [];
+
 	ws.onmessage = (msg: MessageEvent) => {
 		const data = msg.data.toString();
 
-		if (data.length == 16 && !isNaN(Number(data))) {
-            
+		if (isMove(data)) {
+			moves.push(data);
+
+			let cmd = "position startpos moves";
+
+			// adding moves
+			moves.forEach((move: string) => {
+				cmd += " " + move;
+			});
+
+			stockfish.sendCommand(cmd);
+			stockfish.sendCommand("go depth 20");
+
+			const bestMoveListener = (message: string) => {
+				if (message.startsWith("bestmove")) {
+					const bestMove = message.split(" ")[1];
+					console.log(`Stockfish suggested best move: ${bestMove}`);
+
+					ws.send(bestMove);
+
+					stockfish.sendCommand("stop");
+					stockfish.removeStockfishListener(bestMoveListener);
+				}
+			};
+
+			stockfish.addStockfishListener(bestMoveListener);
 		}
+
+		// if (data.length == 16 && !isNaN(Number(data))) {
+		// }
 	};
 });
 
@@ -71,4 +102,10 @@ function getRandomID(length: number): string {
 	const array = new Uint8Array(length);
 	crypto.getRandomValues(array);
 	return Array.from(array, (byte) => (byte % 10).toString()).join("");
+}
+
+function isMove(move: string) {
+	if (move.length == 4 && ["a", "b", "c", "d", "e", "f", "g", "h"].includes(move[0]) && [0, 1, 2, 3, 4, 5, 6, 7, 8].includes(Number(move[1]))) return true;
+
+	return false;
 }

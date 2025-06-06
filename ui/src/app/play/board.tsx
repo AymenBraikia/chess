@@ -14,6 +14,44 @@ function validateMove(originalPosition: string, dropPosition: string): boolean {
 	try {
 		const move = chess.move({ from: originalPosition, to: dropPosition, promotion: "q" });
 
+		if (move.san === "O-O") {
+			if (move.color === "w") {
+				const rook = document.querySelector(`[data-current_position="h1"]`);
+
+				if (rook) {
+					rook?.parentElement?.removeChild(rook);
+					document.querySelector(`[data-position="f1"]`)?.appendChild(rook);
+					rook.setAttribute("data-current_position", "f1");
+				}
+			} else {
+				const rook = document.querySelector(`[data-current_position="h8"]`);
+
+				if (rook) {
+					rook?.parentElement?.removeChild(rook);
+					document.querySelector(`[data-position="f8"]`)?.appendChild(rook);
+					rook.setAttribute("data-current_position", "f8");
+				}
+			}
+		}
+		if (move.san === "O-O-O") {
+			if (move.color === "w") {
+				const rook = document.querySelector(`[data-current_position="a1"]`);
+
+				if (rook) {
+					rook?.parentElement?.removeChild(rook);
+					document.querySelector(`[data-position="d1"]`)?.appendChild(rook);
+					rook.setAttribute("data-current_position", "d1");
+				}
+			} else {
+				const rook = document.querySelector(`[data-current_position="a8"]`);
+
+				if (rook) {
+					rook?.parentElement?.removeChild(rook);
+					document.querySelector(`[data-position="d8"]`)?.appendChild(rook);
+					rook.setAttribute("data-current_position", "d8");
+				}
+			}
+		}
 		return move ? true : false;
 	} catch {
 		return false;
@@ -79,6 +117,9 @@ function pieceMouseDown(e: React.MouseEvent<HTMLDivElement>) {
 
 		if (!validateMove(originalPosition, dropPos)) return;
 
+		sendMove(piece.getAttribute("data-current_position"), dropPos);
+		document.querySelectorAll(".bestMove").forEach((tile) => tile.classList.remove("bestMove"));
+
 		// if(!validateMove(piece,dropTile)) return
 
 		piece.setAttribute("data-current_position", dropTile.getAttribute("data-position") || "");
@@ -87,6 +128,23 @@ function pieceMouseDown(e: React.MouseEvent<HTMLDivElement>) {
 		dropTile.appendChild(piece);
 	};
 }
+
+const ws = new WebSocket("ws://localhost:8080/ws/play");
+
+function sendMove(from: string | null, to: string | null) {
+	if (!from || !to) return;
+
+	if (ws.readyState == ws.OPEN) {
+		ws.send(from + to);
+	}
+}
+
+ws.onmessage = (msg: MessageEvent) => {
+	const from = msg.data.slice(0, 2),
+		to = msg.data.slice(2);
+
+	[document.querySelector(`[data-position='${from}']`), document.querySelector(`[data-position='${to}']`)].forEach((square: Element | null) => square?.classList.add("bestMove"));
+};
 
 function tile(type: boolean, position: string): JSX.Element {
 	let piece = null;

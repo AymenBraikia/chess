@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev2": "ts-node-dev --respawn src/addProduct.ts",
 		"dev": "ts-node-dev --respawn src/index.ts",
+		"lab": "ts-node-dev --respawn src/lab.ts",
 		"build": "tsc",
 		"start": "node dist/index.js"
 	},

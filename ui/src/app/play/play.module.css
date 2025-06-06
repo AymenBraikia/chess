@@ -22,7 +22,9 @@
 .tile {
     width: 85px;
     height: 85px;
+    /* position: relative; */
 }
+
 
 .board {
     position: relative;
@@ -31,12 +33,15 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
+    /* background-color: #c9ae7f; */
+    background-color: #805936;
 }
 
 .piece {
     background-size: cover;
     cursor: grab;
     user-select: none;
-    width: 85px;
-    height: 85px;
+    width: 100%;
+    max-width: 85px;
+    aspect-ratio: 1;
 }
