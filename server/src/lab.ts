@@ -56,6 +56,7 @@ function startStockfish(): void {
 		sendCommand("isready"); // Wait for 'readyok'
 		sendCommand("setoption name Hash value 256"); // Example option
 		sendCommand("setoption name Threads value 4"); // Example option
+		// sendCommand("setoption name MultiPV value 5");
 		sendCommand("ucinewgame");
 	} catch (error: any) {
 		// Catch any errors during spawn itself

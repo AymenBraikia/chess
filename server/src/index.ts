@@ -79,9 +79,10 @@ wss.on("connection", (ws: WebSocket) => {
 			stockfish.sendCommand("go depth 20");
 
 			const bestMoveListener = (message: string) => {
+				console.log(message);
 				if (message.startsWith("bestmove")) {
 					const bestMove = message.split(" ")[1];
-					console.log(`Stockfish suggested best move: ${bestMove}`);
+					console.log(`Stockfish suggested best move: ${message}`);
 
 					ws.send(bestMove);
 
